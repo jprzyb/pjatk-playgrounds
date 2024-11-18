@@ -1,0 +1,224 @@
+-- Tworzenie tabel
+
+-- Tabela Employee (abstrakcyjna)
+CREATE TABLE Employee (
+    id INT PRIMARY KEY,
+    pesel VARCHAR(50),
+    birth_date VARCHAR(50),
+    employment_date VARCHAR(50),
+    contract_type VARCHAR(50),
+    link_to_contract VARCHAR(255),
+    salary VARCHAR(50)
+);
+
+-- Tabela President
+CREATE TABLE President (
+    id INT PRIMARY KEY,
+    emp_id INT FOREIGN KEY REFERENCES Employee(id)
+);
+
+-- Tabela Manager
+CREATE TABLE Manager (
+    id INT PRIMARY KEY,
+    emp_id INT FOREIGN KEY REFERENCES Employee(id)
+);
+
+-- Tabela Planner
+CREATE TABLE Planner (
+    id INT PRIMARY KEY,
+    emp_id INT FOREIGN KEY REFERENCES Employee(id),
+    mngr_id INT FOREIGN KEY REFERENCES Manager(id)
+);
+
+-- Tabela Traffic
+CREATE TABLE Traffic (
+    id INT PRIMARY KEY,
+    emp_id INT FOREIGN KEY REFERENCES Employee(id),
+    mngr_id INT FOREIGN KEY REFERENCES Manager(id)
+);
+
+-- Tabela Accountant
+CREATE TABLE Accountant (
+    id INT PRIMARY KEY,
+    emp_id INT FOREIGN KEY REFERENCES Employee(id)
+);
+
+-- Tabela Publisher
+CREATE TABLE Publisher (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    address VARCHAR(255),
+    bank_account_number VARCHAR(255),
+    nip VARCHAR(50),
+    cost_cpm VARCHAR(50),
+    cost_cpc VARCHAR(50),
+    cost_cpl VARCHAR(50),
+    cost_ff VARCHAR(50),
+    cpm_available VARCHAR(50),
+    ff_available VARCHAR(50),
+    cpc_available VARCHAR(50),
+    cpl_available VARCHAR(50),
+    mobile_available VARCHAR(50),
+    desktop_available VARCHAR(50)
+);
+
+-- Tabela CampaignPlan
+CREATE TABLE CampaignPlan (
+    id INT PRIMARY KEY,
+    communication_channel VARCHAR(50),
+    estimated_cpm VARCHAR(50),
+    estimated_cpc VARCHAR(50),
+    estimated_cpl VARCHAR(50),
+    estimated_ff VARCHAR(50),
+    current_cpm VARCHAR(50),
+    current_cpc VARCHAR(50),
+    current_cpl VARCHAR(50),
+    current_ff VARCHAR(50),
+    margin VARCHAR(50)
+);
+
+-- Tabela Publisher-CampaignPlan
+CREATE TABLE Publisher_CampaignPlan (
+    publisher_id INT FOREIGN KEY REFERENCES Publisher(id),
+    campaignplan_id INT FOREIGN KEY REFERENCES CampaignPlan(id),
+    PRIMARY KEY (publisher_id, campaignplan_id)
+);
+
+-- Tabela Campaign
+CREATE TABLE Campaign (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    planner_id INT FOREIGN KEY REFERENCES Planner(id),
+    traffic_id INT FOREIGN KEY REFERENCES Traffic(id),
+    client_id INT,
+    start_date VARCHAR(50),
+    end_date VARCHAR(50),
+    state VARCHAR(50),
+    invoice_id INT
+);
+
+-- Tabela CampaignPlan-Campaign
+CREATE TABLE CampaignPlan_Campaign (
+    campaignplan_id INT FOREIGN KEY REFERENCES CampaignPlan(id),
+    campaign_id INT FOREIGN KEY REFERENCES Campaign(id),
+    PRIMARY KEY (campaignplan_id, campaign_id)
+);
+
+-- Tabela Client
+CREATE TABLE Client (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    surname VARCHAR(255),
+    email VARCHAR(255),
+    phone_number VARCHAR(50),
+    company_id INT
+);
+
+-- Tabela Company
+CREATE TABLE Company (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    address VARCHAR(255),
+    bank_account VARCHAR(255),
+    nip VARCHAR(50),
+    website VARCHAR(255)
+);
+
+-- Tabela Invoice
+CREATE TABLE Invoice (
+    id INT PRIMARY KEY,
+    campaign_id INT FOREIGN KEY REFERENCES Campaign(id),
+    filepath VARCHAR(255)
+);
+
+-- Tabela Creation
+CREATE TABLE Creation (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    filename VARCHAR(255)
+);
+
+-- Tabela Creation-CampaignPlan
+CREATE TABLE Creation_CampaignPlan (
+    campaignplan_id INT FOREIGN KEY REFERENCES CampaignPlan(id),
+    creation_id INT FOREIGN KEY REFERENCES Creation(id),
+    PRIMARY KEY (campaignplan_id, creation_id)
+);
+
+-- Wstawianie przykładowych danych
+
+-- Employee
+INSERT INTO Employee (id, pesel, birth_date, employment_date, contract_type, link_to_contract, salary) VALUES
+(1, '12345678901', '1980-01-01', '2020-01-01', 'Full-time', 'contract1.pdf', '5000'),
+(2, '23456789012', '1990-02-02', '2021-02-01', 'Part-time', 'contract2.pdf', '3000');
+
+-- President
+INSERT INTO President (id, emp_id) VALUES (1, 1);
+
+-- Manager
+INSERT INTO Manager (id, emp_id) VALUES (1, 2);
+
+-- Planner
+INSERT INTO Planner (id, emp_id, mngr_id) VALUES (1, 1, 1);
+
+-- Traffic
+INSERT INTO Traffic (id, emp_id, mngr_id) VALUES (1, 2, 1);
+
+-- Accountant
+INSERT INTO Accountant (id, emp_id) VALUES (1, 2);
+
+-- Publisher
+INSERT INTO Publisher (id, name, address, bank_account_number, nip, cost_cpm, cost_cpc, cost_cpl, cost_ff, cpm_available, ff_available, cpc_available, cpl_available, mobile_available, desktop_available) VALUES
+(1, 'Publisher1', '123 Main St', '1234567890', '1234567890', '10', '15', '20', '25', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes');
+
+-- CampaignPlan
+INSERT INTO CampaignPlan (id, communication_channel, estimated_cpm, estimated_cpc, estimated_cpl, estimated_ff, current_cpm, current_cpc, current_cpl, current_ff, margin) VALUES
+(1, 'desktop', '12', '18', '22', '30', '14', '20', '25', '35', '10');
+
+-- Publisher-CampaignPlan
+INSERT INTO Publisher_CampaignPlan (publisher_id, campaignplan_id) VALUES (1, 1);
+
+-- Campaign
+INSERT INTO Campaign (id, name, planner_id, traffic_id, client_id, start_date, end_date, state, invoice_id) VALUES
+(1, 'Campaign1', 1, 1, 1, '2023-01-01', '2023-06-01', 'planned', 1);
+
+-- CampaignPlan-Campaign
+INSERT INTO CampaignPlan_Campaign (campaignplan_id, campaign_id) VALUES (1, 1);
+
+-- Client
+INSERT INTO Client (id, name, surname, email, phone_number, company_id) VALUES
+(1, 'John', 'Doe', 'john.doe@example.com', '123456789', 1);
+
+-- Company
+INSERT INTO Company (id, name, address, bank_account, nip, website) VALUES
+(1, 'Company1', '456 Main St', '9876543210', '9876543210', 'www.company1.com');
+
+-- Invoice
+INSERT INTO Invoice (id, campaign_id, filepath) VALUES
+(1, 1, 'invoice1.pdf');
+
+-- Creation
+INSERT INTO Creation (id, name, filename) VALUES
+(1, 'Creation1', 'file1.pdf');
+
+-- Creation-CampaignPlan
+INSERT INTO Creation_CampaignPlan (campaignplan_id, creation_id) VALUES (1, 1);
+
+-- Usuwanie tabel w odpowiedniej kolejności (ze względu na klucze obce)
+
+DROP TABLE Creation_CampaignPlan;
+DROP TABLE Creation;
+DROP TABLE Invoice;
+DROP TABLE CampaignPlan_Campaign;
+DROP TABLE Campaign;
+DROP TABLE Publisher_CampaignPlan;
+DROP TABLE CampaignPlan;
+DROP TABLE Publisher;
+DROP TABLE Accountant;
+DROP TABLE Traffic;
+DROP TABLE Planner;
+DROP TABLE Manager;
+DROP TABLE President;
+DROP TABLE Client;
+DROP TABLE Company;
+DROP TABLE Employee;
